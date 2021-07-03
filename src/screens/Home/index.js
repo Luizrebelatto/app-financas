@@ -23,7 +23,7 @@ export default function Home() {
         <Background>
             <Header />
             <Container>
-                <Name>Luiz</Name>
+                <Name>{user && user.nome}</Name>
                 <Balance>123,00</Balance>
             </Container>
 
