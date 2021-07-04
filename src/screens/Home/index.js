@@ -32,7 +32,7 @@ export default function Home() {
             <Header />
             <Container>
                 <Name>{user && user.nome}</Name>
-                <Balance>123,00</Balance>
+                <Balance>R$ {saldo.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}</Balance>
             </Container>
 
             <Title>Últimas Movimentações</Title>
