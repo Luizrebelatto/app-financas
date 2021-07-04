@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-
+import { format } from 'date-fns';
 import { AuthContext } from '../../contexts/auth'
 
 import Header from '../../components/Header';
@@ -21,8 +21,26 @@ export default function Home() {
         async function loadList() {
             await firebase.database().ref('users').child(uid).on('value', (snapshot) => {
                 setSaldo(snapshot.val().saldo);
-            })
+            });
+
+            await firebase.database().ref('historico')
+                .child(uid).orderByChild('date')
+                .equalTo(format(new Date, 'dd/MM/yy')).limitToLast(10).on('value', (snapshot) => {
+                    setHistoric([]);
+
+                    snapshot.forEach((childItem) => {
+                        let list = {
+                            key: childItem.key,
+                            tipo: childItem.val().tipo,
+                            valor: childItem.val().valor.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+                        };
+                        setHistoric(oldArray => [...oldArray, list].reverse())
+                    })
+                })
         }
+
+
+
         loadList();
     }, []);
 
