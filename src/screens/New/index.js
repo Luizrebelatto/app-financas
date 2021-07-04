@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { SafeAreaView, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
-import firebase from '../../services/firebaseConnection';
+import { useNavigation } from '@react-navigation/native'
 import { format } from 'date-fns'
 
+import firebase from '../../services/firebaseConnection';
+
+import { AuthContext } from '../../contexts/auth';
 import Header from '../../components/Header';
 import Picker from '../../components/Picker';
 
 import { Background, Input, SubmitButton, SubmitText } from './styles';
 
-
 export default function New() {
+    const navigation = useNavigation();
+
     const [valor, setValor] = useState('');
     const [type, setType] = useState(null);
+    const { user: usuario } = useContext(AuthContext);
 
     function handleSubmit() {
         Keyboard.dismiss();
@@ -38,14 +43,27 @@ export default function New() {
     }
 
     async function handleAdd() {
-        let uid = await firebase.auth().currentUser.uid;
+        let uid = usuario.uid;
 
         let key = await firebase.database().ref('historico').child(uid).push().key;
         await firebase.database().ref('historico').child(uid).child(key).set({
             tipo: type,
             valor: parseFloat(valor),
-            date: format(new date(), 'dd/MM/yy')
+            date: format(new Date(), 'dd/MM/yy')
         })
+
+        let user = firebase.database().ref('users').child(uid);
+        await user.once('value').then((snapshot) => {
+            let saldo = parseFloat(snapshot.val().saldo);
+
+            type === 'despesa' ? saldo -= parseFloat(valor) : saldo += parseFloat(valor);
+
+            user.child('saldo').set(saldo);
+        });
+        Keyboard.dismiss();
+        setValor('');
+        navigation.navigate('Home');
+
     }
 
     return (
