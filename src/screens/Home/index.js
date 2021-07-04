@@ -17,7 +17,14 @@ export default function Home() {
     const { user } = useContext(AuthContext);
     const uid = user && user.uid;
 
-
+    useEffect(() => {
+        async function loadList() {
+            await firebase.database().ref('users').child(uid).on('value', (snapshot) => {
+                setSaldo(snapshot.val().saldo);
+            })
+        }
+        loadList();
+    }, []);
 
 
     return (
