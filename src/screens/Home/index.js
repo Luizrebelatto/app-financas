@@ -15,6 +15,7 @@ export default function Home() {
     const [saldo, setSaldo] = useState(0);
 
     const { user } = useContext(AuthContext);
+    const uid = user && user.uid;
 
 
 
