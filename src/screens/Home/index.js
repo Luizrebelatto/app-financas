@@ -1,13 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { format, isBefore } from 'date-fns';
 import { AuthContext } from '../../contexts/auth'
-import { Alert } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import Header from '../../components/Header';
 import HistoricList from '../../components/HistoricList';
 
+
 import firebase from '../../services/firebaseConnection';
 
-import { Background, Container, Name, Balance, Title, List } from './styles';
+import { Background, Container, Name, Balance, Title, List, Area } from './styles';
 
 export default function Home() {
 
@@ -17,6 +19,9 @@ export default function Home() {
     const { user } = useContext(AuthContext);
     const uid = user && user.uid;
 
+    const [newDate, setNewDate] = useState(new Date());
+    const [show, setShow] = useState(false);
+
     useEffect(() => {
         async function loadList() {
             await firebase.database().ref('users').child(uid).on('value', (snapshot) => {
@@ -25,7 +30,7 @@ export default function Home() {
 
             await firebase.database().ref('historico')
                 .child(uid).orderByChild('date')
-                .equalTo(format(new Date, 'dd/MM/yyyy')).limitToLast(10).on('value', (snapshot) => {
+                .equalTo(format(newDate, 'dd/MM/yyyy')).limitToLast(10).on('value', (snapshot) => {
                     setHistoric([]);
 
                     snapshot.forEach((childItem) => {
@@ -88,6 +93,10 @@ export default function Home() {
             })
     }
 
+    function handleShowPicker() {
+
+    }
+
     return (
         <Background>
             <Header />
@@ -96,7 +105,12 @@ export default function Home() {
                 <Balance>R$ {saldo.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}</Balance>
             </Container>
 
-            <Title>Últimas Movimentações</Title>
+            <Area>
+                <TouchableOpacity onPress={handleShowPicker}>
+                    <FontAwesome name="calendar" size={30} color="#fff" />
+                </TouchableOpacity>
+                <Title>Últimas Movimentações</Title>
+            </Area>
 
             <List
                 showsVerticalScrollIndicator={false}
