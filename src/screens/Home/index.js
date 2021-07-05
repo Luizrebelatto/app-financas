@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { format, isPast } from 'date-fns';
 import { AuthContext } from '../../contexts/auth'
-
+import { Alert } from 'react-native';
 import Header from '../../components/Header';
 import HistoricList from '../../components/HistoricList';
 
@@ -25,14 +25,15 @@ export default function Home() {
 
             await firebase.database().ref('historico')
                 .child(uid).orderByChild('date')
-                .equalTo(format(new Date(), 'dd/MM/yy')).limitToLast(10).on('value', (snapshot) => {
+                .equalTo(format(new Date, 'dd/MM/yyyy')).limitToLast(10).on('value', (snapshot) => {
                     setHistoric([]);
 
                     snapshot.forEach((childItem) => {
                         let list = {
                             key: childItem.key,
                             tipo: childItem.val().tipo,
-                            valor: childItem.val().valor.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+                            valor: childItem.val().valor.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.'),
+                            date: childItem.val().date,
                         };
                         setHistoric(oldArray => [...oldArray, list].reverse())
                     })
@@ -44,6 +45,41 @@ export default function Home() {
         loadList();
     }, []);
 
+    function handleDelete(data) {
+        if (isPast(new Date(data.date))) {
+            alert('Você não pode excluir um registro antigo');
+            return;
+        }
+        Alert.alert(
+            'Cuidado Atenção',
+            `Você deseja excluir ${data.type} - Valor: ${data.valor}`,
+            [
+                {
+                    text: 'Cancelar',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Continuar',
+                    onPress: () => handleDeleteSucess(data)
+                }
+            ]
+        )
+
+    }
+
+    async function handleDeleteSucess(data) {
+        await firebase.database().ref('historico').child(uid)
+            .child(data.key).remove()
+            .then(async () => {
+                let saldoAtual = saldo;
+                data.type === 'despesa' ? saldoAtual += parseFloat(data.valor) : saldoAtual -= parseFloat(data.valor);
+
+                await firebase.database().ref('users').child(uid).child('saldo').set(saldoAtual);
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
 
     return (
         <Background>
@@ -59,7 +95,7 @@ export default function Home() {
                 showsVerticalScrollIndicator={false}
                 data={historic}
                 keyExtractor={item => item.key}
-                renderItem={({ item }) => (<HistoricList data={item} />)}
+                renderItem={({ item }) => (<HistoricList data={item} deleteItem={handleDelete} />)}
             />
         </Background>
     );
