@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { format, isPast } from 'date-fns';
+import { format, isBefore } from 'date-fns';
 import { AuthContext } from '../../contexts/auth'
 import { Alert } from 'react-native';
 import Header from '../../components/Header';
@@ -49,8 +49,11 @@ export default function Home() {
         const [diaItem, mesItem, anoItem] = data.date.split('/');
         const dateItem = new Date(`${anoItem}/${mesItem}/${diaItem}`);
 
+        const formatDiaHoje = format(new Date(), 'dd/MM/yyyy');
+        const [diaHoje, mesHoje, anoHoje] = formatDiaHoje.split('/');
+        const dateHoje = new Date(`${anoHoje}/${mesHoje}/${diaHoje}`)
 
-        if (isPast(new Date(data.date))) {
+        if (isBefore(dateItem, dateHoje)) {
             alert('Você não pode excluir um registro antigo');
             return;
         }
