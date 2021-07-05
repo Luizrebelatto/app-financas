@@ -46,6 +46,10 @@ export default function Home() {
     }, []);
 
     function handleDelete(data) {
+        const [diaItem, mesItem, anoItem] = data.date.split('/');
+        const dateItem = new Date(`${anoItem}/${mesItem}/${diaItem}`);
+
+
         if (isPast(new Date(data.date))) {
             alert('Você não pode excluir um registro antigo');
             return;
