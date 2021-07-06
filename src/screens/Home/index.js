@@ -1,8 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { format, isBefore } from 'date-fns';
 import { AuthContext } from '../../contexts/auth'
-import { Alert, TouchableOpacity } from 'react-native';
+import { Alert, TouchableOpacity, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import DatePicker from '../../components/DatePicker';
 import Header from '../../components/Header';
 import HistoricList from '../../components/HistoricList';
 
@@ -48,7 +49,7 @@ export default function Home() {
 
 
         loadList();
-    }, []);
+    }, [newDate]);
 
     function handleDelete(data) {
         const [diaItem, mesItem, anoItem] = data.date.split('/');
@@ -94,7 +95,17 @@ export default function Home() {
     }
 
     function handleShowPicker() {
+        setShow(true);
+    }
 
+    function handleClose() {
+        setShow(false);
+    }
+
+    const onChange = (date) => {
+        setShow(Platform.OS === 'ios');
+        setNewDate(date);
+        console.log(date);
     }
 
     return (
@@ -118,6 +129,16 @@ export default function Home() {
                 keyExtractor={item => item.key}
                 renderItem={({ item }) => (<HistoricList data={item} deleteItem={handleDelete} />)}
             />
+
+            {
+                show && (
+                    <DatePicker
+                        onClose={handleClose}
+                        date={newDate}
+                        onChange={onChange}
+                    />
+                )
+            }
         </Background>
     );
 }
