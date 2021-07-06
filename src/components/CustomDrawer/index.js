@@ -2,7 +2,7 @@ import React from 'react';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { View, Text, Image } from 'react-native';
 
-export default function CustomDrawer() {
+export default function CustomDrawer(props) {
     return (
         <DrawerContentScrollView>
             <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 25 }}>
@@ -15,6 +15,7 @@ export default function CustomDrawer() {
                 <Text style={{ color: '#fff', fontSize: 17, fontWeight: 'bold', paddingBottom: 25 }}>Luiz</Text>
             </View>
 
+            <DrawerItemList {...props} />
 
         </DrawerContentScrollView>
     );
