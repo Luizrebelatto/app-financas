@@ -15,7 +15,7 @@
 
 ## 💻 Projeto
 
-Resolução do Desafio Técnico da empresa codificar, nesse desafio consumi uma Api com informações de clientes onde exibe uma prévia dos dados do orçamento e se quiser ter mais informações, clicando no botao,assim abre janela com todas informações do cliente
+Aplicativo para registro de gastos
 
 
 ## ✨ Tecnologias
