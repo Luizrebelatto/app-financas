@@ -48,7 +48,7 @@ Esse projeto foi desenvolvido com as seguintes Bibliotecas:
 ## 🚀 Como executar
 
 1) - Clonar o projeto do github:
-    git clone https://github.com/Luizrebelatto/app-financas
+    git clone `https://github.com/Luizrebelatto/app-financas`
 
 2) - Abrir terminal(CMD/TERMINAL ou VSCode/CMD) e acessar a pasta raiz do projeto (pelo terminal).
     
